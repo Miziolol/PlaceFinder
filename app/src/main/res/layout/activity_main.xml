@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Root layout: vertical stacking -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
-
 
     <TextView
         android:id="@+id/titleText"
@@ -17,7 +15,6 @@
         android:layout_gravity="center_horizontal"
         android:paddingBottom="10dp" />
 
-
     <EditText
         android:id="@+id/searchBar"
         android:layout_width="match_parent"
@@ -27,15 +24,10 @@
         android:background="@android:drawable/edit_text"
         android:layout_marginBottom="16dp" />
 
-
-    <TextView
-        android:id="@+id/mapPlaceholder"
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="(Map will go here)"
-        android:textColor="#888888"
-        android:textSize="18sp"
-        android:background="#EEEEEE" />
+        android:layout_weight="1" />
 </LinearLayout>
