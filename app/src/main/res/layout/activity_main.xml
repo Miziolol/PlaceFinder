@@ -22,7 +22,9 @@
         android:hint="Search places..."
         android:padding="10dp"
         android:background="@android:drawable/edit_text"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="16dp"
+        android:imeOptions="actionDone"
+        android:singleLine="true"/>
 
     <fragment
         android:id="@+id/map"
