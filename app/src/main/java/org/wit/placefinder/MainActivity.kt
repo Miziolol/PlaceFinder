@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationServices
@@ -17,6 +18,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import androidx.appcompat.app.AlertDialog
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -65,6 +68,44 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+
+        val addPlaceFab = findViewById<FloatingActionButton>(R.id.addPlaceFab)
+
+
+        addPlaceFab.setOnClickListener {
+            showAddPlaceDialog()
+        }
+
+    }
+    private fun showAddPlaceDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_add_place, null)
+        val titleInput = dialogView.findViewById<EditText>(R.id.placeTitleInput)
+        val descInput = dialogView.findViewById<EditText>(R.id.placeDescInput)
+
+        AlertDialog.Builder(this)
+            .setTitle("Add New Place")
+            .setView(dialogView)
+            .setPositiveButton("OK") { _, _ ->
+                val title = titleInput.text.toString()
+                val desc = descInput.text.toString()
+
+                Toast.makeText(this, "Tap on the map to choose a location", Toast.LENGTH_LONG).show()
+
+                map.setOnMapClickListener { latLng ->
+                    val marker = map.addMarker(
+                        MarkerOptions()
+                            .position(latLng)
+                            .title(title)
+                            .snippet(desc)
+                    )
+                    marker?.isVisible = true
+                    
+                    map.setOnMapClickListener(null)
+                }
+
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun addAllMarkers() {
