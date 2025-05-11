@@ -1,6 +1,7 @@
 package org.wit.placefinder
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -57,6 +58,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         enableMyLocation()
         addAllMarkers()
 
+        map.setOnMarkerClickListener { marker ->
+            val title = marker.title
+            val description = marker.snippet
+
+            val intent = Intent(this, PlacemarkDetailsActivity::class.java)
+            intent.putExtra("title", title)
+            intent.putExtra("description", description)
+            startActivity(intent)
+
+            true  
+        }
         //https://developer.android.com/reference/android/text/TextWatcher
         val searchBar = findViewById<EditText>(R.id.searchBar)
         searchBar.addTextChangedListener(object : TextWatcher {
@@ -99,7 +111,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                             .snippet(desc)
                     )
                     marker?.isVisible = true
-                    
+
                     map.setOnMapClickListener(null)
                 }
 
