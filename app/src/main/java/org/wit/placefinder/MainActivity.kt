@@ -28,13 +28,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
 
 
-    private val places = listOf(
-        Place("SETU Gym", "Student gym facility", 52.251417, -7.179167),
-        Place("SETU Library", "Quiet study space", 52.245332, -7.137908),
-        Place("SETU Café", "Coffee and snacks", 52.245982, -7.139153),
-        Place("IT Building", "Main computing labs", 52.245687, -7.137295),
-        Place("Bus Station", "Pick up and drop off", 52.245048, -7.137783)
-    )
+    companion object {
+        var places = mutableListOf(
+            Place("SETU Gym", "Student gym facility", 52.251417, -7.179167),
+            Place("SETU Library", "Quiet study space", 52.245332, -7.137908),
+            Place("SETU Café", "Coffee and snacks", 52.245982, -7.139153),
+            Place("IT Building", "Main computing labs", 52.245687, -7.137295),
+            Place("Bus Station", "Pick up and drop off", 52.245048, -7.137783)
+        )
+    }
 
     private val markerList = mutableListOf<Marker>()
 
@@ -45,7 +47,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
 
+        if (resultCode == RESULT_OK) {
+
+            map.clear()
+            addAllMarkers()
+        }
+    }
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         map.mapType = GoogleMap.MAP_TYPE_HYBRID
@@ -65,10 +75,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             val intent = Intent(this, PlacemarkDetailsActivity::class.java)
             intent.putExtra("title", title)
             intent.putExtra("description", description)
-            startActivity(intent)
+            startActivityForResult(intent, 1001)  // Request code 1001
 
-            true  
+            true
         }
+
         //https://developer.android.com/reference/android/text/TextWatcher
         val searchBar = findViewById<EditText>(R.id.searchBar)
         searchBar.addTextChangedListener(object : TextWatcher {
@@ -176,8 +187,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 }
 
 data class Place(
-    val title: String,
-    val description: String,
+    var title: String,
+    var description: String,
     val lat: Double,
     val lng: Double
 )
