@@ -19,5 +19,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Description"
-        android:textSize="16sp"/>
+        android:textSize="16sp"
+        android:paddingBottom="16dp"/>
+
+    <Button
+        android:id="@+id/editPlacemarkButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Edit"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/deletePlacemarkButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Delete"/>
 </LinearLayout>
