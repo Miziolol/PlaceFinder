@@ -96,4 +96,5 @@ class PlacemarkDetailsActivity : AppCompatActivity() {
             .show()
     }
 
+
 }
