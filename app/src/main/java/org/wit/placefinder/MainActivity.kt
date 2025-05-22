@@ -21,6 +21,10 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import android.content.Context
+import android.widget.Button
+import com.google.gson.Gson
+import java.io.File
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -37,22 +41,84 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             Place("Bus Station", "Pick up and drop off", 52.245048, -7.137783)
         )
     }
+    private fun savePlaces() {
+        val gson = Gson()
+        val jsonString = gson.toJson(places)
 
-    private val markerList = mutableListOf<Marker>()
+        try {
+            val file = File(filesDir, "places.json")
+            file.writeText(jsonString)
+            Toast.makeText(this, "Places saved successfully", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Error saving places", Toast.LENGTH_SHORT).show()
+        }
+    }
+    private fun confirmSave() {
+        AlertDialog.Builder(this)
+            .setTitle("Confirm Save")
+            .setMessage("Are you sure you want to save the current data?")
+            .setPositiveButton("Yes") { _, _ ->
+                savePlaces()
+                Toast.makeText(this, "Data saved successfully", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("No", null)
+            .show()
+    }
+    private fun loadPlaces() {
+        val gson = Gson()
+        val file = File(filesDir, "places.json")
 
+        if (file.exists()) {
+            try {
+                val jsonString = file.readText()
+                val loadedPlaces = gson.fromJson(jsonString, Array<Place>::class.java).toList()
+
+                places.clear()
+                places.addAll(loadedPlaces)
+
+                addAllMarkers()
+                Toast.makeText(this, "Places loaded successfully", Toast.LENGTH_SHORT).show()
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(this, "Error loading places", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    private fun confirmLoad() {
+        AlertDialog.Builder(this)
+            .setTitle("Confirm Load")
+            .setMessage("Are you sure you want to load the saved data? This will overwrite current data.")
+            .setPositiveButton("Yes") { _, _ ->
+                loadPlaces()
+                Toast.makeText(this, "Data loaded successfully", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("No", null)
+            .show()
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        val saveButton = findViewById<Button>(R.id.saveButton)
+        val loadButton = findViewById<Button>(R.id.loadButton)
+
+        saveButton.setOnClickListener {
+            confirmSave()
+        }
+
+        loadButton.setOnClickListener {
+            confirmLoad()
+        }
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == RESULT_OK) {
-
-            map.clear()
             addAllMarkers()
         }
     }
@@ -100,6 +166,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
     }
+    private fun addMarker(place: Place) {
+        val location = LatLng(place.lat, place.lng)
+        map.addMarker(
+            MarkerOptions()
+                .position(location)
+                .title(place.title)
+                .snippet(place.description)
+        )
+    }
     private fun showAddPlaceDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_place, null)
         val titleInput = dialogView.findViewById<EditText>(R.id.placeTitleInput)
@@ -115,13 +190,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 Toast.makeText(this, "Tap on the map to choose a location", Toast.LENGTH_LONG).show()
 
                 map.setOnMapClickListener { latLng ->
-                    val marker = map.addMarker(
-                        MarkerOptions()
-                            .position(latLng)
-                            .title(title)
-                            .snippet(desc)
-                    )
-                    marker?.isVisible = true
+                    val newPlace = Place(title, desc, latLng.latitude, latLng.longitude)
+                    places.add(newPlace)
+                    addMarker(newPlace)
 
                     map.setOnMapClickListener(null)
                 }
@@ -132,25 +203,22 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun addAllMarkers() {
+        map.clear()
+
         for (place in places) {
-            val location = LatLng(place.lat, place.lng)
-            val marker = map.addMarker(
-                MarkerOptions()
-                    .position(location)
-                    .title(place.title)
-                    .snippet(place.description)
-            )
-            if (marker != null) {
-                markerList.add(marker)
-            }
+            addMarker(place)
         }
     }
 
     private fun filterMarkers(query: String) {
-        for ((index, place) in places.withIndex()) {
-            val marker = markerList[index]
-            val isMatch = place.title.lowercase().contains(query)
-            marker.isVisible = isMatch
+        map.clear()
+
+        for (place in places) {
+            val isMatch = place.title.lowercase().contains(query.lowercase())
+
+            if (isMatch || query.isEmpty()) {
+                addMarker(place)
+            }
         }
     }
 

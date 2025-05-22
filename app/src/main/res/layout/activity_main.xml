@@ -2,14 +2,32 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_height="match_parent"
         android:padding="16dp">
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:text="Save"
+            android:layout_marginEnd="8dp"/>
+
+        <!-- Load Button -->
+        <Button
+            android:id="@+id/loadButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="Load"
+            android:layout_marginStart="8dp"/>
 
         <TextView
             android:id="@+id/titleText"
@@ -18,20 +36,22 @@
             android:text="PlaceFinder"
             android:textSize="28sp"
             android:textStyle="bold"
-            android:layout_gravity="center_horizontal"
-            android:paddingBottom="10dp" />
+            android:layout_centerHorizontal="true"/>
 
         <EditText
             android:id="@+id/searchBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/titleText"
+            android:layout_marginTop="8dp"
             android:hint="Search places..."
             android:padding="10dp"
             android:background="@android:drawable/edit_text"
-            android:layout_marginBottom="8dp"
             android:imeOptions="actionDone"
             android:singleLine="true"/>
-    </LinearLayout>
+        <!-- Load Floating Button -->
+
+    </RelativeLayout>
 
     <FrameLayout
         android:id="@+id/mapContainer"
@@ -53,6 +73,9 @@
             android:layout_margin="42dp"
             android:contentDescription="Add Place"
             app:srcCompat="@android:drawable/ic_input_add" />
+
+
+
     </FrameLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
